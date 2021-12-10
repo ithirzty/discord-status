@@ -1,0 +1,14 @@
+#include "token.bah"
+#include "status.bah"
+
+main(args []cpstring) int {
+
+    //get discord token
+    tok = getToken()
+
+    //Sets status
+    setStatus(tok, "Hello from Bah-lang")
+
+
+    return 0
+}

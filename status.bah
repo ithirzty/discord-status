@@ -1,0 +1,25 @@
+#include "http.bah"
+#include "json.bah"
+
+//Set the discord user status.
+setStatus(tok cpstring, status cpstring) {
+    req = http_request{}
+    req.url = parseUrl("https://discord.com/api/v9/users/@me/settings")
+    req.method = "PATCH"
+    req.setHeader("authority", "discord.com")
+    req.setHeader("accept-language", "fr")
+    req.setHeader("authorization", tok)
+    req.setHeader("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.16 Chrome/91.0.4472.164 Electron/13.4.0 Safari/537.36")
+    req.setHeader("content-type", "application/json")
+    req.setHeader("accept", "*/*")
+    req.setHeader("origin", "https://discord.com")
+    req.setHeader("sec-fetch-site", "same-origin")
+    req.setHeader("sec-fetch-mode", "cors")
+    req.setHeader("sec-fetch-dest", "empty")
+    req.setHeader("referer", "https://discord.com/channels/@me")
+
+    req.body = new string
+    req.body.set("{\"custom_status\":{\"text\":\""+status+"\"}}")
+    req.setHeader("content-length", intToStr(req.body.length))
+    req.send()
+}

