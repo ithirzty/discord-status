@@ -1,4 +1,4 @@
-# Discord custom status (in [Bah](https://github.com/ithitzty/bah))
+# Discord custom status (in [Bah](https://github.com/ithirzty/bah))
 This is a simple setup to set a custom status in Bah.
 
 ## Features
